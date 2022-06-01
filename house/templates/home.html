@@ -1,0 +1,99 @@
+<!-- house/templates/home.html -->
+{% extends 'base.html' %}
+{% load core_tags_filters %}
+{% load static %}
+{% block content %}
+
+  <form role="form" method="get" action="{% url 'house_filter' %}">
+    <div class="input-group">
+
+      <input type="text" name="q" value="{% if filter.form.q.value %}{{ filter.form.q.value }}{% endif %}" class="form-control" id="id_q" placeholder="請輸入縣市或是關鍵字">
+
+      <div class="input-group-append">
+          <button type="submit" class="btn btn-inline btn-sm bg-warning">
+          <svg class="bi bi-search" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" d="M10.442 10.442a1 1 0 0 1 1.415 0l3.85 3.85a1 1 0 0 1-1.414 1.415l-3.85-3.85a1 1 0 0 1 0-1.415z"/>
+            <path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"/>
+          </svg>
+          </button>
+       </div>
+
+    </div>
+  </form>
+  
+<div class="table-responsive">
+  <table class="table table-striped table-hover">
+      <thead>
+      <tr>
+          <th scope="col">描述</th>
+          <th scope="col">城市</th>
+          <th scope="col">縣市</th>
+          <th scope="col">房型</th>
+          <th scope="col">朝向</th>
+          <th scope="col">面積</th>
+          <th scope="col">房租(月)</th>
+          <th scope="col">連絡電話</th>
+      </tr>
+      </thead>
+        <tbody>
+      {% if page_obj %}
+        
+          {% for item in page_obj %}
+          <tr>
+              <td>{{ item.description }}</td>
+              <td>{{ item.community.get_city_display }}</td>
+              <td>{{ item.community }}</td>
+
+              <td>{{ item.get_bedroom_display }}</td>
+              <td>{{ item.get_direction_display }}</td>
+              <td>{{ item.area }}</td>
+              <td>{{ item.price }}</td>
+              
+              <td>{{ item.phone }}</td>
+          </tr>
+          {% endfor %}
+      {% elif object_list %}
+      {% for item in object_list %}
+      <tr>
+        <td>{{ item.description }}</td>
+        <td>{{ item.community.get_city_display }}</td>
+        <td>{{ item.community }}</td>
+
+        <td>{{ item.get_bedroom_display }}</td>
+        <td>{{ item.get_direction_display }}</td>
+        <td>{{ item.area }}</td>
+        <td>{{ item.price }}</td>
+        
+        <td>{{ item.phone }}</td>
+      </tr>
+      {% endfor %}
+        {% endif %}
+      </tbody>
+  </table>
+
+  {% if is_paginated %}
+  <ul class="pagination">
+      {% if page_obj.has_previous %}
+      <li class="page-item"><a class="page-link" href="?{% param_replace page=page_obj.previous_page_number %}">&laquo;</a></li>
+      {% else %}
+      <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+      {% endif %}
+
+      {% for i in paginator.page_range %}
+      {% if page_obj.number == i %}
+      <li class="page-item active"><span class="page-link"> {{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+            <li class="page-item"><a class="page-link" href="?{% param_replace page=i %}">{{ i }}</a></li>
+      {% endif %}
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+      <li class="page-item"><a class="page-link" href="?{% param_replace page=page_obj.next_page_number %}">&raquo;</a></li>
+      {% else %}
+      <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+      {% endif %}
+  </ul>
+{% endif %}
+
+</div>
+{% endblock content %}
